@@ -1,0 +1,71 @@
+llm:
+  path:
+    prompt_template_dir: src/llm/prompt
+    transcript_dir: data/llm/transcript
+    result_dir: results/llm_outputs
+
+  transcriber:
+    whisper: large-v2
+    
+  estimator:
+    experiment_name: test
+    temperature: 0.5
+    max_output_tokens: 3000
+    max_input_tokens: 13000
+    max_output_score: 4
+
+
+ensemble:
+  path:
+    audio_diarized_dir: data/ensemble/audio_diarized
+    face_pose_landmark_dir: data/ensemble/landmarks
+    embed_dir: data/ensemble/embeds
+    label_file: data/labels.csv
+    result_dir: results/ensemble_log
+
+  encoder:
+    audio_window_len_in_sec: 1  # 1s
+    video_window_len_in_sec: 1  # 1s
+    min_valid_video_frame_ratio: 0.9
+
+  training:
+    experiment_name: test
+    n_fold: 5
+    random_seed: 42
+    
+    modality:
+      C10:             # Facial Expression
+        - face
+      C11:             # Vocal Expression  
+        - audio
+      C12:             # Expressive Gestures
+        - pose
+      C13:             # Quantity of Speech
+        - spk_duration
+
+    pooling_dimension:
+      C10:
+        - 30
+        - 10
+      C11:
+        - 30
+        - 15
+      C12:
+        - 80
+        - 20
+      C13:
+        - 30
+
+    downsample: TomekLinks
+    
+    feature_selector:
+      n_estimators: 100
+      max_depth: 10
+
+    classifier:
+      n_estimators:
+      - 80
+      - 90
+      - 100
+      max_depth:
+      - 10
